@@ -51,31 +51,26 @@ As of version 5.4.2.6, there is no builtin support for stemming exceptions.
 Installation
 ------------
 
-To list all plugins in current installation:
+Build the plugin
+```bash
+sudo apt-get install maven
 
-    sudo bin/elasticsearch-plugin list
+cd elasticsearch-skroutz-greekstemmer
 
-In order to install the latest version of the plugin, simply run:
+mvn package
+```
 
-    sudo bin/elasticsearch-plugin install gr.skroutz:elasticsearch-skroutz-greekstemmer:5.4.2.1
-
-In order to install version 2.4.4 of the plugin, simply run:
-
-    sudo bin/plugin install skroutz/elasticsearch-skroutz-greekstemmer/2.4.4.1
-
-In order to install versions prior to 0.0.12, simply run:
-
-    sudo bin/plugin -install skroutz/elasticsearch-skroutz-greekstemmer/0.0.1
-
-To remove a plugin (5.x.x):
-
-    sudo bin/elasticsearch-plugin remove <plugin_name>
+Installation
+```bash
+sudo bin/elasticsearch-plugin install file:///path/to/plugin.zip
+```
 
 Versions
 --------
 
 SkroutzGreekStemmer Plugin | ElasticSearch | Branch
 ---------------------------|---------------|--------|
+7.1.0                   | 7.1.0        | 7.1.0 |
 5.4.2.6                    | 5.4.2         | 5.4.2  |
 5.4.0.1                    | 5.4.0         | 5.4.0  |
 2.4.4.1                    | 2.4.4         | 2.4.4  |

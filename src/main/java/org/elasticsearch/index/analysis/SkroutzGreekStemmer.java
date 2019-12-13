@@ -6,7 +6,7 @@ import org.apache.lucene.analysis.el.GreekLowerCaseFilter;
 import org.apache.lucene.analysis.CharArraySet;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
+import org.elasticsearch.common.logging.Loggers;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -29,16 +29,16 @@ import org.elasticsearch.common.logging.ESLoggerFactory;
  * A stemmer for Greek words, according to: <i>Development of a Stemmer for the
  * Greek Language.</i> Georgios Ntais
  * <p>
- * NOTE: Input is expected to be casefolded for Greek (including folding of final
- * sigma to sigma), and with diacritics removed. This can be achieved with
+ * NOTE: Input is expected to be casefolded for Greek (including folding of
+ * final sigma to sigma), and with diacritics removed. This can be achieved with
  * either {@link GreekLowerCaseFilter} or ICUFoldingFilter.
  *
  * This stemmer is based on the stemmer of the @lucene.experimental with some
  * additions.
  * <p>
  * According to: <i>Development of a Stemmer for the Greek Language.</i>, the
- * original stemmer removed 158 suffixes. Eight suffixes were not handled at
- * all by this stemmer. However, four of those eight suffixes belong to the same
+ * original stemmer removed 158 suffixes. Eight suffixes were not handled at all
+ * by this stemmer. However, four of those eight suffixes belong to the same
  * category with one of the suffixes that is actually handle by the stemmer.
  * This suffix is "ια" which is mishandled and may be the plural type of the
  * suffix "ιο".
@@ -55,14 +55,15 @@ import org.elasticsearch.common.logging.ESLoggerFactory;
  * about these suffixes are added.
  */
 public class SkroutzGreekStemmer {
-  protected final Logger logger = ESLoggerFactory.getLogger
-          (SkroutzGreekStemmer.class.getName());
+  protected final Logger logger = Loggers.getLogger(Logger.class, SkroutzGreekStemmer.class.getName());
 
-  public SkroutzGreekStemmer() { }
+  public SkroutzGreekStemmer() {
+  }
 
   public int stem(char s[], int len) {
     // Too short
-    if (len < 3) return len;
+    if (len < 3)
+      return len;
 
     final int origLen = len;
     // "short rules": if it hits one of these, it skips the "long list"
@@ -97,19 +98,16 @@ public class SkroutzGreekStemmer {
   }
 
   private int rule0(char s[], int len) {
-    if (len > 9 && (endsWith(s, len, "καθεστωτοσ")
-        || endsWith(s, len, "καθεστωτων")))
+    if (len > 9 && (endsWith(s, len, "καθεστωτοσ") || endsWith(s, len, "καθεστωτων")))
       return len - 4;
 
-    if (len > 8 && (endsWith(s, len, "γεγονοτοσ")
-        || endsWith(s, len, "γεγονοτων")))
+    if (len > 8 && (endsWith(s, len, "γεγονοτοσ") || endsWith(s, len, "γεγονοτων")))
       return len - 4;
 
     if (len > 8 && endsWith(s, len, "καθεστωτα"))
       return len - 3;
 
-    if (len > 7 && (endsWith(s, len, "τατογιου")
-        || endsWith(s, len, "τατογιων")))
+    if (len > 7 && (endsWith(s, len, "τατογιου") || endsWith(s, len, "τατογιων")))
       return len - 4;
 
     if (len > 7 && endsWith(s, len, "γεγονοτα"))
@@ -118,14 +116,9 @@ public class SkroutzGreekStemmer {
     if (len > 7 && endsWith(s, len, "καθεστωσ"))
       return len - 2;
 
-    if (len > 6 && (endsWith(s, len, "σκαγιου"))
-        || endsWith(s, len, "σκαγιων")
-        || endsWith(s, len, "κρεατοσ")
-        || endsWith(s, len, "κρεατων")
-        || endsWith(s, len, "περατοσ")
-        || endsWith(s, len, "περατων")
-        || endsWith(s, len, "τερατοσ")
-        || endsWith(s, len, "τερατων"))
+    if (len > 6 && (endsWith(s, len, "σκαγιου")) || endsWith(s, len, "σκαγιων") || endsWith(s, len, "κρεατοσ")
+        || endsWith(s, len, "κρεατων") || endsWith(s, len, "περατοσ") || endsWith(s, len, "περατων")
+        || endsWith(s, len, "τερατοσ") || endsWith(s, len, "τερατων"))
       return len - 4;
 
     if (len > 6 && endsWith(s, len, "τατογια"))
@@ -134,27 +127,19 @@ public class SkroutzGreekStemmer {
     if (len > 6 && endsWith(s, len, "γεγονοσ"))
       return len - 2;
 
-    if (len > 5 && (endsWith(s, len, "φαγιου")
-        || endsWith(s, len, "φαγιων")
-        || endsWith(s, len, "σογιου")
+    if (len > 5 && (endsWith(s, len, "φαγιου") || endsWith(s, len, "φαγιων") || endsWith(s, len, "σογιου")
         || endsWith(s, len, "σογιων")))
       return len - 4;
 
-    if (len > 5 && (endsWith(s, len, "σκαγια")
-        || endsWith(s, len, "κρεατα")
-        || endsWith(s, len, "περατα")
+    if (len > 5 && (endsWith(s, len, "σκαγια") || endsWith(s, len, "κρεατα") || endsWith(s, len, "περατα")
         || endsWith(s, len, "τερατα")))
       return len - 3;
 
-    if (len > 4 && (endsWith(s, len, "φαγια")
-        || endsWith(s, len, "σογια")
-        || endsWith(s, len, "φωτοσ")
+    if (len > 4 && (endsWith(s, len, "φαγια") || endsWith(s, len, "σογια") || endsWith(s, len, "φωτοσ")
         || endsWith(s, len, "φωτων")))
       return len - 3;
 
-    if (len > 4 && (endsWith(s, len, "κρεασ")
-        || endsWith(s, len, "περασ")
-        || endsWith(s, len, "τερασ")))
+    if (len > 4 && (endsWith(s, len, "κρεασ") || endsWith(s, len, "περασ") || endsWith(s, len, "τερασ")))
       return len - 2;
 
     if (len > 3 && (endsWith(s, len, "φωτα") || endsWith(s, len, "φωτο")))
@@ -172,22 +157,11 @@ public class SkroutzGreekStemmer {
   private int rule1(char s[], int len) {
     if (len > 4 && (endsWith(s, len, "αδεσ") || endsWith(s, len, "αδων"))) {
       len -= 4;
-      if (!(endsWith(s, len, "οκ") ||
-          endsWith(s, len, "μαμ") ||
-          endsWith(s, len, "μαν") ||
-          endsWith(s, len, "μπαμπ") ||
-          endsWith(s, len, "πατερ") ||
-          endsWith(s, len, "γιαγι") ||
-          endsWith(s, len, "νταντ") ||
-          endsWith(s, len, "κυρ") ||
-          endsWith(s, len, "θει") ||
-          endsWith(s, len, "πεθερ") ||
-          endsWith(s, len, "μουσαμ") ||
-          endsWith(s, len, "παρ") ||
-          endsWith(s, len, "ψαρ") ||
-          endsWith(s, len, "τζουρ") ||
-          endsWith(s, len, "ταμπουρ") ||
-          endsWith(s, len, "καπλαμ")))
+      if (!(endsWith(s, len, "οκ") || endsWith(s, len, "μαμ") || endsWith(s, len, "μαν") || endsWith(s, len, "μπαμπ")
+          || endsWith(s, len, "πατερ") || endsWith(s, len, "γιαγι") || endsWith(s, len, "νταντ")
+          || endsWith(s, len, "κυρ") || endsWith(s, len, "θει") || endsWith(s, len, "πεθερ")
+          || endsWith(s, len, "μουσαμ") || endsWith(s, len, "παρ") || endsWith(s, len, "ψαρ")
+          || endsWith(s, len, "τζουρ") || endsWith(s, len, "ταμπουρ") || endsWith(s, len, "καπλαμ")))
         len += 2; // add back -αδ
     }
     return len;
@@ -196,14 +170,8 @@ public class SkroutzGreekStemmer {
   private int rule2(char s[], int len) {
     if (len > 4 && (endsWith(s, len, "εδεσ") || endsWith(s, len, "εδων"))) {
       len -= 4;
-      if (endsWith(s, len, "οπ") ||
-          endsWith(s, len, "ιπ") ||
-          endsWith(s, len, "εμπ") ||
-          endsWith(s, len, "υπ") ||
-          endsWith(s, len, "γηπ") ||
-          endsWith(s, len, "δαπ") ||
-          endsWith(s, len, "κρασπ") ||
-          endsWith(s, len, "μιλ"))
+      if (endsWith(s, len, "οπ") || endsWith(s, len, "ιπ") || endsWith(s, len, "εμπ") || endsWith(s, len, "υπ")
+          || endsWith(s, len, "γηπ") || endsWith(s, len, "δαπ") || endsWith(s, len, "κρασπ") || endsWith(s, len, "μιλ"))
         len += 2; // add back -εδ
     }
     return len;
@@ -212,21 +180,10 @@ public class SkroutzGreekStemmer {
   private int rule3(char s[], int len) {
     if (len > 5 && (endsWith(s, len, "ουδεσ") || endsWith(s, len, "ουδων"))) {
       len -= 5;
-      if (endsWith(s, len, "αρκ") ||
-          endsWith(s, len, "καλιακ") ||
-          endsWith(s, len, "πεταλ") ||
-          endsWith(s, len, "λιχ") ||
-          endsWith(s, len, "πλεξ") ||
-          endsWith(s, len, "σκ") ||
-          endsWith(s, len, "σ") ||
-          endsWith(s, len, "φλ") ||
-          endsWith(s, len, "φρ") ||
-          endsWith(s, len, "βελ") ||
-          endsWith(s, len, "λουλ") ||
-          endsWith(s, len, "χν") ||
-          endsWith(s, len, "σπ") ||
-          endsWith(s, len, "τραγ") ||
-          endsWith(s, len, "φε"))
+      if (endsWith(s, len, "αρκ") || endsWith(s, len, "καλιακ") || endsWith(s, len, "πεταλ") || endsWith(s, len, "λιχ")
+          || endsWith(s, len, "πλεξ") || endsWith(s, len, "σκ") || endsWith(s, len, "σ") || endsWith(s, len, "φλ")
+          || endsWith(s, len, "φρ") || endsWith(s, len, "βελ") || endsWith(s, len, "λουλ") || endsWith(s, len, "χν")
+          || endsWith(s, len, "σπ") || endsWith(s, len, "τραγ") || endsWith(s, len, "φε"))
         len += 3; // add back -ουδ
     }
     return len;
@@ -241,16 +198,12 @@ public class SkroutzGreekStemmer {
    * <i>παρεα - παρεασ - παρεεσ, στερεα - στερεασ - στερεεσ</i>
    */
   private static final CharArraySet exc4 = new CharArraySet(
-      Arrays.asList("θ", "δ", "ελ", "γαλ", "ν", "π", "ιδ", "παρ", "στερ",
-          "ορφ", "ανδρ", "αντρ"),
-      false);
+      Arrays.asList("θ", "δ", "ελ", "γαλ", "ν", "π", "ιδ", "παρ", "στερ", "ορφ", "ανδρ", "αντρ"), false);
 
   private int rule4(char s[], int len) {
     boolean removed = false;
 
-    if (len > 3 && (endsWith(s, len, "εωσ") ||
-                    endsWith(s, len, "εων") ||
-                    endsWith(s, len, "εασ"))) {
+    if (len > 3 && (endsWith(s, len, "εωσ") || endsWith(s, len, "εων") || endsWith(s, len, "εασ"))) {
       len -= 3;
       removed = true;
     } else if (len > 2 && endsWith(s, len, "εα")) {
@@ -272,30 +225,22 @@ public class SkroutzGreekStemmer {
    * <p>
    * <i>ηλιος - ηλος, αγριος - αγρος, χωρα - χωριο, αγιος - αγων, φωτο - φωτια,
    * νοτα - νοτια, μπριος - μπρος, τηλιο - τηλος, δημος - δημιος, οπαλιο - οπαλ,
-   * πατριος - πατρα, ποντος - ποντιος, σκορπω - σκορπιος, σπανιος - σπανος,
-   * τιμή - τιμιος</i>
+   * πατριος - πατρα, ποντος - ποντιος, σκορπω - σκορπιος, σπανιος - σπανος, τιμή
+   * - τιμιος</i>
    */
   private static final CharArraySet exc5 = new CharArraySet(
-      Arrays.asList("αγ", "αγγελ", "αγρ", "αερ", "αθλ", "ακουσ", "αξ", "ασ",
-          "β", "βιβλ", "βυτ", "γ", "γιαγ", "γων", "δ", "δαν", "δηλ", "δημ",
-          "δοκιμ", "ελ", "ζαχαρ", "ηλ", "ηπ", "ιδ", "ισκ", "ιστ", "ιον",  "ιων",
-          "κιμωλ", "κολον", "κορ", "κτηρ", "κυρ", "λαγ", "λογ", "μαγ", "μπαν",
-          "μπετον", "μπρ", "ναυτ", "νοτ", "οπαλ", "οξ", "ορ", "οσ", "παναγ",
-          "πατρ", "πηλ", "πην", "πλαισ", "ποντ", "ραδ", "ροδ", "σκ", "σκορπ",
-          "σουν", "σπαν", "σταδ", "συρ", "τηλ", "τιμ", "τοκ", "τοπ", "τροχ",
-          "χωρ", "φιλ", "φωτ", "χ", "χιλ", "χρωμ"),
-          false);
+      Arrays.asList("αγ", "αγγελ", "αγρ", "αερ", "αθλ", "ακουσ", "αξ", "ασ", "β", "βιβλ", "βυτ", "γ", "γιαγ", "γων",
+          "δ", "δαν", "δηλ", "δημ", "δοκιμ", "ελ", "ζαχαρ", "ηλ", "ηπ", "ιδ", "ισκ", "ιστ", "ιον", "ιων", "κιμωλ",
+          "κολον", "κορ", "κτηρ", "κυρ", "λαγ", "λογ", "μαγ", "μπαν", "μπετον", "μπρ", "ναυτ", "νοτ", "οπαλ", "οξ",
+          "ορ", "οσ", "παναγ", "πατρ", "πηλ", "πην", "πλαισ", "ποντ", "ραδ", "ροδ", "σκ", "σκορπ", "σουν", "σπαν",
+          "σταδ", "συρ", "τηλ", "τιμ", "τοκ", "τοπ", "τροχ", "χωρ", "φιλ", "φωτ", "χ", "χιλ", "χρωμ"),
+      false);
 
   private int rule5a(char s[], int len) {
-    if (len > 7 && (endsWith(s, len, "ειο") ||
-                    endsWith(s, len, "εια"))) {
+    if (len > 7 && (endsWith(s, len, "ειο") || endsWith(s, len, "εια"))) {
       len -= 3;
-    } else if (len > 8 && (endsWith(s, len, "ειοσ") ||
-                           endsWith(s, len, "ειοι") ||
-                           endsWith(s, len, "ειασ") ||
-                           endsWith(s, len, "ειεσ") ||
-                           endsWith(s, len, "ειου") ||
-                           endsWith(s, len, "ειων"))) {
+    } else if (len > 8 && (endsWith(s, len, "ειοσ") || endsWith(s, len, "ειοι") || endsWith(s, len, "ειασ")
+        || endsWith(s, len, "ειεσ") || endsWith(s, len, "ειου") || endsWith(s, len, "ειων"))) {
       len -= 4;
     } else if (len > 9 && (endsWith(s, len, "ειουσ"))) {
       len -= 5;
@@ -306,27 +251,18 @@ public class SkroutzGreekStemmer {
 
   private int rule5b(char s[], int len) {
     boolean removed = false;
-    if (len > 2 && (endsWith(s, len, "ιο") ||
-                    endsWith(s, len, "ια"))) {
-      if (String.valueOf(s).startsWith("τετραδ") ||
-          String.valueOf(s).startsWith("πανι")) {
-       len -= 1;
+    if (len > 2 && (endsWith(s, len, "ιο") || endsWith(s, len, "ια"))) {
+      if (String.valueOf(s).startsWith("τετραδ") || String.valueOf(s).startsWith("πανι")) {
+        len -= 1;
       } else {
         len -= 2;
       }
       removed = true;
-    } else if (len > 3 && (endsWith(s, len, "ιασ") ||
-                           endsWith(s, len, "ιεσ") ||
-                           endsWith(s, len, "ιοσ") ||
-                           endsWith(s, len, "ιου") ||
-                           endsWith(s, len, "ιοι") ||
-                           endsWith(s, len, "ιον") ||
-                           endsWith(s, len, "ιων"))) {
-      if (String.valueOf(s).startsWith("τετραδ") ||
-          String.valueOf(s).startsWith("πανι")) {
+    } else if (len > 3 && (endsWith(s, len, "ιασ") || endsWith(s, len, "ιεσ") || endsWith(s, len, "ιοσ")
+        || endsWith(s, len, "ιου") || endsWith(s, len, "ιοι") || endsWith(s, len, "ιον") || endsWith(s, len, "ιων"))) {
+      if (String.valueOf(s).startsWith("τετραδ") || String.valueOf(s).startsWith("πανι")) {
         return len - 2;
-      }
-      else {
+      } else {
         len -= 3;
       }
       removed = true;
@@ -335,9 +271,9 @@ public class SkroutzGreekStemmer {
       removed = true;
     }
 
-    if (removed) {                                    // like γιος -> γ
+    if (removed) { // like γιος -> γ
       if (endsWithVowel(s, len) || exc5.contains(s, 0, len) || len < 2) {
-        len++;  // add back -ι
+        len++; // add back -ι
       } else if (endsWith(s, len, "παλ")) {
         // add -αι emoved > 4 chars so its safe)
         len += 2;
@@ -348,45 +284,30 @@ public class SkroutzGreekStemmer {
     return len;
   }
 
-  private static final CharArraySet exc6 = new CharArraySet(
-      Arrays.asList("αδ", "αλ", "αμαν", "αμερ", "αμμοχαλ", "ανηθ", "αντιδ",
-          "απλ", "αττ", "αφρ", "βασ", "βρωμ","βρωμ", "γεν", "γερ", "δ", "δικαν",
-          "διαφορ", "δυτ", "ειδ", "ενδ", "εξωδ", "ηθ", "θετ", "καλλιν", "καλπ",
-          "καταδ", "κουζιν", "κρ", "κωδ", "λαδ", "λογ",  "μ", "μερ", "μοναδ",
-          "μουλ", "μουσ", "μπαγιατ", "μπαν", "μπολ", "μποσ", "μυστ", "ν", "νιτ",
-          "ξικ", "οπτ", "παν", "περιστροφ", "πετσ", "πικαντ", "πιτσ", "πλαστ",
-          "πλιατσ", "ποντ", "ποστελν", "πρωτοδ", "σερτ", "σημαντ", "στατ",
-          "συναδ", "συνομηλ", "τελ", "τεχν", "τηλεσκοπ", "τροπ", "τσαμ", "υποδ",
-          "φ", "φιλον", "φυλοδ", "φυσ", "χασ", "φυτ"),
-          false);
+  private static final CharArraySet exc6 = new CharArraySet(Arrays.asList("αδ", "αλ", "αμαν", "αμερ", "αμμοχαλ", "ανηθ",
+      "αντιδ", "απλ", "αττ", "αφρ", "βασ", "βρωμ", "βρωμ", "γεν", "γερ", "δ", "δικαν", "διαφορ", "δυτ", "ειδ", "ενδ",
+      "εξωδ", "ηθ", "θετ", "καλλιν", "καλπ", "καταδ", "κουζιν", "κρ", "κωδ", "λαδ", "λογ", "μ", "μερ", "μοναδ", "μουλ",
+      "μουσ", "μπαγιατ", "μπαν", "μπολ", "μποσ", "μυστ", "ν", "νιτ", "ξικ", "οπτ", "παν", "περιστροφ", "πετσ", "πικαντ",
+      "πιτσ", "πλαστ", "πλιατσ", "ποντ", "ποστελν", "πρωτοδ", "σερτ", "σημαντ", "στατ", "συναδ", "συνομηλ", "τελ",
+      "τεχν", "τηλεσκοπ", "τροπ", "τσαμ", "υποδ", "φ", "φιλον", "φυλοδ", "φυσ", "χασ", "φυτ"), false);
 
   private int rule6(char s[], int len) {
     boolean removed = false;
-    if (len > 3 && (endsWith(s, len, "ικα") ||
-                    endsWith(s, len, "ικο") ||
-                    endsWith(s, len, "ικη"))) {
+    if (len > 3 && (endsWith(s, len, "ικα") || endsWith(s, len, "ικο") || endsWith(s, len, "ικη"))) {
       len -= 3;
       removed = true;
-    } else if (len > 4 && (endsWith(s, len, "ικου") ||
-                           endsWith(s, len, "ικων") ||
-                           endsWith(s, len, "ικωσ") ||
-                           endsWith(s, len, "ικοσ") ||
-                           endsWith(s, len, "ικον") ||
-                           endsWith(s, len, "ικοι") ||
-                           endsWith(s, len, "ικησ") ||
-                           endsWith(s, len, "ικεσ"))) {
+    } else if (len > 4 && (endsWith(s, len, "ικου") || endsWith(s, len, "ικων") || endsWith(s, len, "ικωσ")
+        || endsWith(s, len, "ικοσ") || endsWith(s, len, "ικον") || endsWith(s, len, "ικοι") || endsWith(s, len, "ικησ")
+        || endsWith(s, len, "ικεσ"))) {
       len -= 4;
       removed = true;
-    } else if (len > 5 && (endsWith(s, len, "ικουσ") ||
-                           endsWith(s, len, "ικεισ"))) {
+    } else if (len > 5 && (endsWith(s, len, "ικουσ") || endsWith(s, len, "ικεισ"))) {
       len -= 5;
       removed = true;
     }
 
     if (removed) {
-      if (endsWithVowel(s, len)    ||
-          exc6.contains(s, 0, len) ||
-          endsWith(s, len, "φοιν"))
+      if (endsWithVowel(s, len) || exc6.contains(s, 0, len) || endsWith(s, len, "φοιν"))
         len += 2; // add back -ικ
       else if (String.valueOf(s).startsWith("πασχαλιατ"))
         len -= 4;
@@ -395,9 +316,7 @@ public class SkroutzGreekStemmer {
   }
 
   private static final CharArraySet exc7 = new CharArraySet(
-      Arrays.asList("αναπ", "αποθ", "αποκ", "αποστ", "βουβ", "ξεθ", "ουλ",
-          "πεθ", "πικρ", "ποτ", "σιχ", "χ"),
-      false);
+      Arrays.asList("αναπ", "αποθ", "αποκ", "αποστ", "βουβ", "ξεθ", "ουλ", "πεθ", "πικρ", "ποτ", "σιχ", "χ"), false);
 
   private int rule7(char s[], int len) {
     if (len == 5 && endsWith(s, len, "αγαμε"))
@@ -407,9 +326,7 @@ public class SkroutzGreekStemmer {
       len -= 7;
     else if (len > 6 && endsWith(s, len, "ουσαμε"))
       len -= 6;
-    else if (len > 5 && (endsWith(s, len, "αγαμε") ||
-             endsWith(s, len, "ησαμε") ||
-             endsWith(s, len, "ηκαμε")))
+    else if (len > 5 && (endsWith(s, len, "αγαμε") || endsWith(s, len, "ησαμε") || endsWith(s, len, "ηκαμε")))
       len -= 5;
 
     if (len > 3 && endsWith(s, len, "αμε")) {
@@ -421,24 +338,17 @@ public class SkroutzGreekStemmer {
     return len;
   }
 
-  private static final CharArraySet exc8a = new CharArraySet(
-      Arrays.asList("τρ", "τσ"),
-      false);
+  private static final CharArraySet exc8a = new CharArraySet(Arrays.asList("τρ", "τσ"), false);
 
   private static final CharArraySet exc8b = new CharArraySet(
-      Arrays.asList("βετερ", "βουλκ", "βραχμ", "γ", "δραδουμ", "θ", "καλπουζ",
-          "καστελ", "κορμορ", "λαοπλ", "μωαμεθ", "μ", "μουσουλμ", "ν", "ουλ",
-          "π", "πελεκ", "πλ", "πολισ", "πορτολ", "σαρακατσ", "σουλτ",
-          "τσαρλατ", "ορφ", "τσιγγ", "τσοπ", "φωτοστεφ", "χ", "ψυχοπλ", "αγ",
-          "ορφ", "γαλ", "γερ", "δεκ", "διπλ", "αμερικαν", "ουρ", "πιθ",
-          "πουριτ", "σ", "ζωντ", "ικ", "καστ", "κοπ", "λιχ", "λουθηρ", "μαιντ",
-          "μελ", "σιγ", "σπ", "στεγ", "τραγ", "τσαγ", "φ", "ερ", "αδαπ",
-          "αθιγγ", "αμηχ", "ανικ", "ανοργ", "απηγ", "απιθ", "ατσιγγ", "βασ",
-          "βασκ", "βαθυγαλ", "βιομηχ", "βραχυκ", "διατ", "διαφ", "ενοργ",
-          "θυσ", "καπνοβιομηχ", "καταγαλ", "κλιβ", "κοιλαρφ", "λιβ",
-          "μεγλοβιομηχ", "μικροβιομηχ", "νταβ", "ξηροκλιβ", "ολιγοδαμ",
-          "ολογαλ", "πενταρφ", "περηφ", "περιτρ", "πλατ", "πολυδαπ", "πολυμηχ",
-          "στεφ", "ταβ", "τετ", "υπερηφ", "υποκοπ", "χαμηλοδαπ", "ψηλοταβ"),
+      Arrays.asList("βετερ", "βουλκ", "βραχμ", "γ", "δραδουμ", "θ", "καλπουζ", "καστελ", "κορμορ", "λαοπλ", "μωαμεθ",
+          "μ", "μουσουλμ", "ν", "ουλ", "π", "πελεκ", "πλ", "πολισ", "πορτολ", "σαρακατσ", "σουλτ", "τσαρλατ", "ορφ",
+          "τσιγγ", "τσοπ", "φωτοστεφ", "χ", "ψυχοπλ", "αγ", "ορφ", "γαλ", "γερ", "δεκ", "διπλ", "αμερικαν", "ουρ",
+          "πιθ", "πουριτ", "σ", "ζωντ", "ικ", "καστ", "κοπ", "λιχ", "λουθηρ", "μαιντ", "μελ", "σιγ", "σπ", "στεγ",
+          "τραγ", "τσαγ", "φ", "ερ", "αδαπ", "αθιγγ", "αμηχ", "ανικ", "ανοργ", "απηγ", "απιθ", "ατσιγγ", "βασ", "βασκ",
+          "βαθυγαλ", "βιομηχ", "βραχυκ", "διατ", "διαφ", "ενοργ", "θυσ", "καπνοβιομηχ", "καταγαλ", "κλιβ", "κοιλαρφ",
+          "λιβ", "μεγλοβιομηχ", "μικροβιομηχ", "νταβ", "ξηροκλιβ", "ολιγοδαμ", "ολογαλ", "πενταρφ", "περηφ", "περιτρ",
+          "πλατ", "πολυδαπ", "πολυμηχ", "στεφ", "ταβ", "τετ", "υπερηφ", "υποκοπ", "χαμηλοδαπ", "ψηλοταβ"),
       false);
 
   private int rule8(char s[], int len) {
@@ -447,20 +357,14 @@ public class SkroutzGreekStemmer {
     if (len > 8 && endsWith(s, len, "ιουντανε")) {
       len -= 8;
       removed = true;
-    } else if (len > 7 && (endsWith(s, len, "ιοντανε") ||
-        endsWith(s, len, "ουντανε") ||
-        endsWith(s, len, "ηθηκανε"))) {
+    } else if (len > 7 && (endsWith(s, len, "ιοντανε") || endsWith(s, len, "ουντανε") || endsWith(s, len, "ηθηκανε"))) {
       len -= 7;
       removed = true;
-    } else if (len > 6 && (endsWith(s, len, "ιοτανε") ||
-        endsWith(s, len, "οντανε") ||
-        endsWith(s, len, "ουσανε"))) {
+    } else if (len > 6 && (endsWith(s, len, "ιοτανε") || endsWith(s, len, "οντανε") || endsWith(s, len, "ουσανε"))) {
       len -= 6;
       removed = true;
-    } else if (len > 5 && (endsWith(s, len, "αγανε") ||
-        endsWith(s, len, "ησανε") ||
-        endsWith(s, len, "οτανε") ||
-        endsWith(s, len, "ηκανε"))) {
+    } else if (len > 5 && (endsWith(s, len, "αγανε") || endsWith(s, len, "ησανε") || endsWith(s, len, "οτανε")
+        || endsWith(s, len, "ηκανε"))) {
       len -= 5;
       removed = true;
     }
@@ -485,9 +389,8 @@ public class SkroutzGreekStemmer {
   }
 
   private static final CharArraySet exc9 = new CharArraySet(
-      Arrays.asList("αβαρ", "βεν", "εναρ", "αβρ", "αδ", "αθ", "αν", "απλ",
-          "βαρον", "ντρ", "σκ", "κοπ", "μπορ", "νιφ", "παγ", "παρακαλ", "σερπ",
-          "σκελ", "συρφ", "τοκ", "υ", "δ", "εμ", "θαρρ", "θ"),
+      Arrays.asList("αβαρ", "βεν", "εναρ", "αβρ", "αδ", "αθ", "αν", "απλ", "βαρον", "ντρ", "σκ", "κοπ", "μπορ", "νιφ",
+          "παγ", "παρακαλ", "σερπ", "σκελ", "συρφ", "τοκ", "υ", "δ", "εμ", "θαρρ", "θ"),
       false);
 
   private int rule9(char s[], int len) {
@@ -496,39 +399,15 @@ public class SkroutzGreekStemmer {
 
     if (len > 3 && endsWith(s, len, "ετε")) {
       len -= 3;
-      if (exc9.contains(s, 0, len) ||
-          endsWithVowelNoY(s, len) ||
-          endsWith(s, len, "οδ") ||
-          endsWith(s, len, "αιρ") ||
-          endsWith(s, len, "φορ") ||
-          endsWith(s, len, "ταθ") ||
-          endsWith(s, len, "διαθ") ||
-          endsWith(s, len, "σχ") ||
-          endsWith(s, len, "ενδ") ||
-          endsWith(s, len, "ευρ") ||
-          endsWith(s, len, "τιθ") ||
-          endsWith(s, len, "υπερθ") ||
-          endsWith(s, len, "ραθ") ||
-          endsWith(s, len, "ενθ") ||
-          endsWith(s, len, "ροθ") ||
-          endsWith(s, len, "σθ") ||
-          endsWith(s, len, "πυρ") ||
-          endsWith(s, len, "αιν") ||
-          endsWith(s, len, "συνδ") ||
-          endsWith(s, len, "συν") ||
-          endsWith(s, len, "συνθ") ||
-          endsWith(s, len, "χωρ") ||
-          endsWith(s, len, "πον") ||
-          endsWith(s, len, "βρ") ||
-          endsWith(s, len, "καθ") ||
-          endsWith(s, len, "ευθ") ||
-          endsWith(s, len, "εκθ") ||
-          endsWith(s, len, "νετ") ||
-          endsWith(s, len, "ρον") ||
-          endsWith(s, len, "αρκ") ||
-          endsWith(s, len, "βαρ") ||
-          endsWith(s, len, "βολ") ||
-          endsWith(s, len, "ωφελ")) {
+      if (exc9.contains(s, 0, len) || endsWithVowelNoY(s, len) || endsWith(s, len, "οδ") || endsWith(s, len, "αιρ")
+          || endsWith(s, len, "φορ") || endsWith(s, len, "ταθ") || endsWith(s, len, "διαθ") || endsWith(s, len, "σχ")
+          || endsWith(s, len, "ενδ") || endsWith(s, len, "ευρ") || endsWith(s, len, "τιθ") || endsWith(s, len, "υπερθ")
+          || endsWith(s, len, "ραθ") || endsWith(s, len, "ενθ") || endsWith(s, len, "ροθ") || endsWith(s, len, "σθ")
+          || endsWith(s, len, "πυρ") || endsWith(s, len, "αιν") || endsWith(s, len, "συνδ") || endsWith(s, len, "συν")
+          || endsWith(s, len, "συνθ") || endsWith(s, len, "χωρ") || endsWith(s, len, "πον") || endsWith(s, len, "βρ")
+          || endsWith(s, len, "καθ") || endsWith(s, len, "ευθ") || endsWith(s, len, "εκθ") || endsWith(s, len, "νετ")
+          || endsWith(s, len, "ρον") || endsWith(s, len, "αρκ") || endsWith(s, len, "βαρ") || endsWith(s, len, "βολ")
+          || endsWith(s, len, "ωφελ")) {
         len += 2; // add back -ετ
       }
     }
@@ -573,12 +452,10 @@ public class SkroutzGreekStemmer {
   }
 
   private static final CharArraySet exc12a = new CharArraySet(
-      Arrays.asList("π", "απ", "συμπ", "ασυμπ", "ακαταπ", "αμεταμφ"),
-      false);
+      Arrays.asList("π", "απ", "συμπ", "ασυμπ", "ακαταπ", "αμεταμφ"), false);
 
   private static final CharArraySet exc12b = new CharArraySet(
-      Arrays.asList("αλ", "αρ", "εκτελ", "ζ", "μ", "ξ", "παρακαλ", "αρ", "προ", "νισ"),
-      false);
+      Arrays.asList("αλ", "αρ", "εκτελ", "ζ", "μ", "ξ", "παρακαλ", "αρ", "προ", "νισ"), false);
 
   private int rule12(char s[], int len) {
     if (len > 5 && endsWith(s, len, "ιεστε")) {
@@ -596,8 +473,7 @@ public class SkroutzGreekStemmer {
     return len;
   }
 
-  private static final CharArraySet exc13 = new CharArraySet(
-      Arrays.asList("διαθ", "θ", "παρακαταθ", "προσθ", "συνθ"),
+  private static final CharArraySet exc13 = new CharArraySet(Arrays.asList("διαθ", "θ", "παρακαταθ", "προσθ", "συνθ"),
       false);
 
   private int rule13(char s[], int len) {
@@ -617,13 +493,8 @@ public class SkroutzGreekStemmer {
       removed = true;
     }
 
-    if (removed && (exc13.contains(s, 0, len)
-        || endsWith(s, len, "σκωλ")
-        || endsWith(s, len, "σκουλ")
-        || endsWith(s, len, "ναρθ")
-        || endsWith(s, len, "σφ")
-        || endsWith(s, len, "οθ")
-        || endsWith(s, len, "πιθ"))) {
+    if (removed && (exc13.contains(s, 0, len) || endsWith(s, len, "σκωλ") || endsWith(s, len, "σκουλ")
+        || endsWith(s, len, "ναρθ") || endsWith(s, len, "σφ") || endsWith(s, len, "οθ") || endsWith(s, len, "πιθ"))) {
       len += 2; // add back the -ηκ
     }
 
@@ -631,10 +502,8 @@ public class SkroutzGreekStemmer {
   }
 
   private static final CharArraySet exc14 = new CharArraySet(
-      Arrays.asList("φαρμακ", "χαδ", "αγκ", "αναρρ", "βρομ", "εκλιπ", "λαμπιδ",
-          "λεχ", "μ", "πατ", "ρ", "λ", "μεδ", "μεσαζ", "υποτειν", "αμ", "αιθ",
-          "ανηκ", "δεσποζ", "ενδιαφερ", "δε", "δευτερευ", "καθαρευ", "πλε",
-          "τσα"),
+      Arrays.asList("φαρμακ", "χαδ", "αγκ", "αναρρ", "βρομ", "εκλιπ", "λαμπιδ", "λεχ", "μ", "πατ", "ρ", "λ", "μεδ",
+          "μεσαζ", "υποτειν", "αμ", "αιθ", "ανηκ", "δεσποζ", "ενδιαφερ", "δε", "δευτερευ", "καθαρευ", "πλε", "τσα"),
       false);
 
   private int rule14(char s[], int len) {
@@ -648,38 +517,23 @@ public class SkroutzGreekStemmer {
       removed = true;
     }
 
-    if (removed && (exc14.contains(s, 0, len)
-        || endsWithVowel(s, len)
-        || endsWith(s, len, "ποδαρ")
-        || endsWith(s, len, "βλεπ")
-        || endsWith(s, len, "πανταχ")
-        || endsWith(s, len, "φρυδ")
-        || endsWith(s, len, "μαντιλ")
-        || endsWith(s, len, "μαλλ")
-        || endsWith(s, len, "κυματ")
-        || endsWith(s, len, "λαχ")
-        || endsWith(s, len, "ληγ")
-        || endsWith(s, len, "φαγ")
-        || endsWith(s, len, "ομ")
+    if (removed && (exc14.contains(s, 0, len) || endsWithVowel(s, len) || endsWith(s, len, "ποδαρ")
+        || endsWith(s, len, "βλεπ") || endsWith(s, len, "πανταχ") || endsWith(s, len, "φρυδ")
+        || endsWith(s, len, "μαντιλ") || endsWith(s, len, "μαλλ") || endsWith(s, len, "κυματ")
+        || endsWith(s, len, "λαχ") || endsWith(s, len, "ληγ") || endsWith(s, len, "φαγ") || endsWith(s, len, "ομ")
         || endsWith(s, len, "πρωτ"))) {
       len += 3; // add back -ουσ
     }
 
-   return len;
+    return len;
   }
 
-  private static final CharArraySet exc15a = new CharArraySet(
-      Arrays.asList("αβαστ", "πολυφ", "αδηφ", "παμφ", "ρ", "ασπ", "αφ", "αμαλ",
-          "αμαλλι", "ανυστ", "απερ", "ασπαρ", "αχαρ", "δερβεν", "δροσοπ",
-          "ξεφ", "νεοπ", "νομοτ", "ολοπ", "ομοτ", "προστ", "προσωποπ", "συμπ",
-          "συντ", "τ", "υποτ", "χαρ", "αειπ", "αιμοστ", "ανυπ", "αποτ",
-          "αρτιπ", "διατ", "εν", "επιτ", "κροκαλοπ", "σιδηροπ", "λ", "ναυ",
-          "ουλαμ", "ουρ", "π", "τρ", "μ"),
-      false);
+  private static final CharArraySet exc15a = new CharArraySet(Arrays.asList("αβαστ", "πολυφ", "αδηφ", "παμφ", "ρ",
+      "ασπ", "αφ", "αμαλ", "αμαλλι", "ανυστ", "απερ", "ασπαρ", "αχαρ", "δερβεν", "δροσοπ", "ξεφ", "νεοπ", "νομοτ",
+      "ολοπ", "ομοτ", "προστ", "προσωποπ", "συμπ", "συντ", "τ", "υποτ", "χαρ", "αειπ", "αιμοστ", "ανυπ", "αποτ",
+      "αρτιπ", "διατ", "εν", "επιτ", "κροκαλοπ", "σιδηροπ", "λ", "ναυ", "ουλαμ", "ουρ", "π", "τρ", "μ"), false);
 
-  private static final CharArraySet exc15b = new CharArraySet(
-      Arrays.asList("ψοφ", "ναυλοχ"),
-      false);
+  private static final CharArraySet exc15b = new CharArraySet(Arrays.asList("ψοφ", "ναυλοχ"), false);
 
   private int rule15(char s[], int len) {
     boolean removed = false;
@@ -692,20 +546,11 @@ public class SkroutzGreekStemmer {
     }
 
     if (removed) {
-      final boolean cond1 = exc15a.contains(s, 0, len)
-        || endsWith(s, len, "οφ")
-        || endsWith(s, len, "πελ")
-        || endsWith(s, len, "χορτ")
-        || endsWith(s, len, "λλ")
-        || endsWith(s, len, "σφ")
-        || endsWith(s, len, "ρπ")
-        || endsWith(s, len, "φρ")
-        || endsWith(s, len, "πρ")
-        || endsWith(s, len, "λοχ")
-        || endsWith(s, len, "σμην");
+      final boolean cond1 = exc15a.contains(s, 0, len) || endsWith(s, len, "οφ") || endsWith(s, len, "πελ")
+          || endsWith(s, len, "χορτ") || endsWith(s, len, "λλ") || endsWith(s, len, "σφ") || endsWith(s, len, "ρπ")
+          || endsWith(s, len, "φρ") || endsWith(s, len, "πρ") || endsWith(s, len, "λοχ") || endsWith(s, len, "σμην");
 
-      final boolean cond2 = exc15b.contains(s, 0, len)
-        || endsWith(s, len, "κολλ");
+      final boolean cond2 = exc15b.contains(s, 0, len) || endsWith(s, len, "κολλ");
 
       if (cond1 && !cond2)
         len += 2; // add back -αγ
@@ -715,8 +560,7 @@ public class SkroutzGreekStemmer {
   }
 
   private static final CharArraySet exc16 = new CharArraySet(
-      Arrays.asList("ν", "χερσον", "δωδεκαν", "ερημον", "μεγαλον", "επταν", "ι"),
-      false);
+      Arrays.asList("ν", "χερσον", "δωδεκαν", "ερημον", "μεγαλον", "επταν", "ι"), false);
 
   private int rule16(char s[], int len) {
     boolean removed = false;
@@ -735,8 +579,7 @@ public class SkroutzGreekStemmer {
   }
 
   private static final CharArraySet exc17 = new CharArraySet(
-      Arrays.asList("ασβ", "σβ", "αχρ", "χρ", "απλ", "αειμν", "δυσχρ", "ευχρ", "κοινοχρ", "παλιμψ"),
-      false);
+      Arrays.asList("ασβ", "σβ", "αχρ", "χρ", "απλ", "αειμν", "δυσχρ", "ευχρ", "κοινοχρ", "παλιμψ"), false);
 
   private int rule17(char s[], int len) {
     if (len > 4 && endsWith(s, len, "ηστε")) {
@@ -749,8 +592,7 @@ public class SkroutzGreekStemmer {
   }
 
   private static final CharArraySet exc18 = new CharArraySet(
-      Arrays.asList("ν", "ρ", "σπι", "στραβομουτσ", "κακομουτσ", "εξων"),
-      false);
+      Arrays.asList("ν", "ρ", "σπι", "στραβομουτσ", "κακομουτσ", "εξων"), false);
 
   private int rule18(char s[], int len) {
     boolean removed = false;
@@ -773,8 +615,7 @@ public class SkroutzGreekStemmer {
   }
 
   private static final CharArraySet exc19 = new CharArraySet(
-      Arrays.asList("παρασουσ", "φ", "χ", "ωριοπλ", "αζ", "αλλοσουσ", "ασουσ"),
-      false);
+      Arrays.asList("παρασουσ", "φ", "χ", "ωριοπλ", "αζ", "αλλοσουσ", "ασουσ"), false);
 
   private int rule19(char s[], int len) {
     boolean removed = false;
@@ -796,42 +637,33 @@ public class SkroutzGreekStemmer {
     return len;
   }
 
-  private static final CharArraySet exc20a = new CharArraySet(
-      Arrays.asList("γραμμ"), false);
+  private static final CharArraySet exc20a = new CharArraySet(Arrays.asList("γραμμ"), false);
 
-  private static final CharArraySet exc20b = new CharArraySet(
-      Arrays.asList("γεμ", "σταμ"), false);
-
+  private static final CharArraySet exc20b = new CharArraySet(Arrays.asList("γεμ", "σταμ"), false);
 
   private int rule20(char s[], int len) {
     boolean removed = false;
     if (len > 6 && endsWith(s, len, "ματουσ")) {
       len -= 5;
       removed = true;
-    } else if (len > 5 && (endsWith(s, len, "ματων") ||
-        endsWith(s, len, "ματοσ") ||
-        endsWith(s, len, "ματωσ") ||
-        endsWith(s, len, "ματου") ||
-        endsWith(s, len, "ματησ") ||
-        endsWith(s, len, "ματεσ") ||
-        endsWith(s, len, "ματοι"))) {
+    } else if (len > 5 && (endsWith(s, len, "ματων") || endsWith(s, len, "ματοσ") || endsWith(s, len, "ματωσ")
+        || endsWith(s, len, "ματου") || endsWith(s, len, "ματησ") || endsWith(s, len, "ματεσ")
+        || endsWith(s, len, "ματοι"))) {
       len -= 4;
       removed = true;
-    } else if (len > 4 && (endsWith(s, len, "ματα") ||
-        endsWith(s, len, "ματο") ||
-        endsWith(s, len, "ματη"))) {
+    } else if (len > 4 && (endsWith(s, len, "ματα") || endsWith(s, len, "ματο") || endsWith(s, len, "ματη"))) {
       len -= 3;
       removed = true;
     }
 
     if (removed)
       if (exc20a.contains(s, 0, len)) {
-      // add -α
-      len += 1;
-      s[len - 1] = 'α';
-    } else if (exc20b.contains(s, 0, len)) {
-      len += 2; // add -ατ
-    }
+        // add -α
+        len += 1;
+        s[len - 1] = 'α';
+      } else if (exc20b.contains(s, 0, len)) {
+        len += 2; // add -ατ
+      }
 
     return len;
   }
@@ -847,110 +679,57 @@ public class SkroutzGreekStemmer {
     if (len > 9 && endsWith(s, len, "ιοντουσαν"))
       return len - 9;
 
-    if (len > 8 && (endsWith(s, len, "ιομασταν") ||
-        endsWith(s, len, "ιοσασταν") ||
-        endsWith(s, len, "ιουμαστε") ||
-        endsWith(s, len, "οντουσαν")))
+    if (len > 8 && (endsWith(s, len, "ιομασταν") || endsWith(s, len, "ιοσασταν") || endsWith(s, len, "ιουμαστε")
+        || endsWith(s, len, "οντουσαν")))
       return len - 8;
 
-    if (len > 7 && (endsWith(s, len, "ιεμαστε") ||
-        endsWith(s, len, "ιεσαστε") ||
-        endsWith(s, len, "ιομουνα") ||
-        endsWith(s, len, "ιοσαστε") ||
-        endsWith(s, len, "ιοσουνα") ||
-        endsWith(s, len, "ιουνται") ||
-        endsWith(s, len, "ιουνταν") ||
-        endsWith(s, len, "ηθηκατε") ||
-        endsWith(s, len, "ομασταν") ||
-        endsWith(s, len, "οσασταν") ||
-        endsWith(s, len, "ουμαστε")))
+    if (len > 7 && (endsWith(s, len, "ιεμαστε") || endsWith(s, len, "ιεσαστε") || endsWith(s, len, "ιομουνα")
+        || endsWith(s, len, "ιοσαστε") || endsWith(s, len, "ιοσουνα") || endsWith(s, len, "ιουνται")
+        || endsWith(s, len, "ιουνταν") || endsWith(s, len, "ηθηκατε") || endsWith(s, len, "ομασταν")
+        || endsWith(s, len, "οσασταν") || endsWith(s, len, "ουμαστε")))
       return len - 7;
 
-    if (len > 6 && (endsWith(s, len, "ιομουν") ||
-        endsWith(s, len, "ιονταν") ||
-        endsWith(s, len, "ιοσουν") ||
-        endsWith(s, len, "ηθειτε") ||
-        endsWith(s, len, "ηθηκαν") ||
-        endsWith(s, len, "ομουνα") ||
-        endsWith(s, len, "οσαστε") ||
-        endsWith(s, len, "οσουνα") ||
-        endsWith(s, len, "ουνται") ||
-        endsWith(s, len, "ουνταν") ||
-        endsWith(s, len, "ουσατε")))
+    if (len > 6 && (endsWith(s, len, "ιομουν") || endsWith(s, len, "ιονταν") || endsWith(s, len, "ιοσουν")
+        || endsWith(s, len, "ηθειτε") || endsWith(s, len, "ηθηκαν") || endsWith(s, len, "ομουνα")
+        || endsWith(s, len, "οσαστε") || endsWith(s, len, "οσουνα") || endsWith(s, len, "ουνται")
+        || endsWith(s, len, "ουνταν") || endsWith(s, len, "ουσατε")))
       return len - 6;
 
-    if (len > 5 && (endsWith(s, len, "αγατε") ||
-        endsWith(s, len, "ιεμαι") ||
-        endsWith(s, len, "ιεται") ||
-        endsWith(s, len, "ιεσαι") ||
-        endsWith(s, len, "ιοταν") ||
-        endsWith(s, len, "ιουμα") ||
-        endsWith(s, len, "ηθεισ") ||
-        endsWith(s, len, "ηθουν") ||
-        endsWith(s, len, "ηκατε") ||
-        endsWith(s, len, "ησατε") ||
-        endsWith(s, len, "ησουν") ||
-        endsWith(s, len, "ομουν") ||
-        endsWith(s, len, "ονται") ||
-        endsWith(s, len, "ονταν") ||
-        endsWith(s, len, "οσουν") ||
-        endsWith(s, len, "ουμαι") ||
-        endsWith(s, len, "ουσαν")))
+    if (len > 5 && (endsWith(s, len, "αγατε") || endsWith(s, len, "ιεμαι") || endsWith(s, len, "ιεται")
+        || endsWith(s, len, "ιεσαι") || endsWith(s, len, "ιοταν") || endsWith(s, len, "ιουμα")
+        || endsWith(s, len, "ηθεισ") || endsWith(s, len, "ηθουν") || endsWith(s, len, "ηκατε")
+        || endsWith(s, len, "ησατε") || endsWith(s, len, "ησουν") || endsWith(s, len, "ομουν")
+        || endsWith(s, len, "ονται") || endsWith(s, len, "ονταν") || endsWith(s, len, "οσουν")
+        || endsWith(s, len, "ουμαι") || endsWith(s, len, "ουσαν")))
       return len - 5;
 
-    if (len > 4 && (endsWith(s, len, "αγαν") ||
-        endsWith(s, len, "αμαι") ||
-        endsWith(s, len, "ασαι") ||
-        endsWith(s, len, "αται") ||
-        endsWith(s, len, "ειτε") ||
-        endsWith(s, len, "εσαι") ||
-        endsWith(s, len, "εται") ||
-        endsWith(s, len, "ηδεσ") ||
-        endsWith(s, len, "ηδων") ||
-        endsWith(s, len, "ηθει") ||
-        endsWith(s, len, "ηκαν") ||
-        endsWith(s, len, "ησαν") ||
-        endsWith(s, len, "ησει") ||
-        endsWith(s, len, "ησεσ") ||
-        endsWith(s, len, "ομαι") ||
-        endsWith(s, len, "οταν")))
+    if (len > 4 && (endsWith(s, len, "αγαν") || endsWith(s, len, "αμαι") || endsWith(s, len, "ασαι")
+        || endsWith(s, len, "αται") || endsWith(s, len, "ειτε") || endsWith(s, len, "εσαι") || endsWith(s, len, "εται")
+        || endsWith(s, len, "ηδεσ") || endsWith(s, len, "ηδων") || endsWith(s, len, "ηθει") || endsWith(s, len, "ηκαν")
+        || endsWith(s, len, "ησαν") || endsWith(s, len, "ησει") || endsWith(s, len, "ησεσ") || endsWith(s, len, "ομαι")
+        || endsWith(s, len, "οταν")))
       return len - 4;
 
-    if (len > 3 && (endsWith(s, len, "αει") ||
-        endsWith(s, len, "εισ") ||
-        endsWith(s, len, "ηθω") ||
-        endsWith(s, len, "ησω") ||
-        endsWith(s, len, "ουν") ||
-        endsWith(s, len, "οισ") ||
-        endsWith(s, len, "ουσ"))) {
-      if(String.valueOf(s).startsWith("σπορ")) {
+    if (len > 3 && (endsWith(s, len, "αει") || endsWith(s, len, "εισ") || endsWith(s, len, "ηθω")
+        || endsWith(s, len, "ησω") || endsWith(s, len, "ουν") || endsWith(s, len, "οισ") || endsWith(s, len, "ουσ"))) {
+      if (String.valueOf(s).startsWith("σπορ")) {
         return len - 2;
       } else {
         return len - 3;
       }
     }
-    if(String.valueOf(s).equals("χαρτησ") ||
-            String.valueOf(s).equals("χαρτων") ||
-            String.valueOf(s).equals("χαρτεσ")) {
+    if (String.valueOf(s).equals("χαρτησ") || String.valueOf(s).equals("χαρτων")
+        || String.valueOf(s).equals("χαρτεσ")) {
       s[len - 2] = 'η';
       return len - 1;
     }
-    if (len > 2 && (endsWith(s, len, "αν") ||
-        endsWith(s, len, "ασ") ||
-        endsWith(s, len, "αω") ||
-        endsWith(s, len, "ει") ||
-        endsWith(s, len, "εσ") ||
-        endsWith(s, len, "ησ") ||
-        endsWith(s, len, "οι") ||
-        endsWith(s, len, "οσ") ||
-        endsWith(s, len, "ου") ||
-        endsWith(s, len, "υα") ||
-        endsWith(s, len, "υσ") ||
-        endsWith(s, len, "ων"))) {
-      if(String.valueOf(s).startsWith("σπορ")) {
+    if (len > 2 && (endsWith(s, len, "αν") || endsWith(s, len, "ασ") || endsWith(s, len, "αω") || endsWith(s, len, "ει")
+        || endsWith(s, len, "εσ") || endsWith(s, len, "ησ") || endsWith(s, len, "οι") || endsWith(s, len, "οσ")
+        || endsWith(s, len, "ου") || endsWith(s, len, "υα") || endsWith(s, len, "υσ") || endsWith(s, len, "ων"))) {
+      if (String.valueOf(s).startsWith("σπορ")) {
         s[len - 2] = 'ο';
         return len - 1;
-      } else if(String.valueOf(s).startsWith("ντουλαπ")) {
+      } else if (String.valueOf(s).startsWith("ντουλαπ")) {
         s[len - 2] = 'α';
         return len - 1;
       } else if (String.valueOf(s).startsWith("πασχαλιν")) {
@@ -973,25 +752,18 @@ public class SkroutzGreekStemmer {
     return len;
   }
 
-  private static final CharArraySet exc23a = new CharArraySet(
-      Arrays.asList("εξ", "εσ", "κατ", "αν", "κ", "μ", "πρ"), false);
+  private static final CharArraySet exc23a = new CharArraySet(Arrays.asList("εξ", "εσ", "κατ", "αν", "κ", "μ", "πρ"),
+      false);
 
-  private static final CharArraySet exc23b = new CharArraySet(
-      Arrays.asList("κα", "μ", "λε", "ελε", "δε"), false);
-
+  private static final CharArraySet exc23b = new CharArraySet(Arrays.asList("κα", "μ", "λε", "ελε", "δε"), false);
 
   private int rule23(char s[], int len) {
     boolean removed = false;
-    if (endsWith(s, len, "εστερ") ||
-        endsWith(s, len, "εστατ"))
+    if (endsWith(s, len, "εστερ") || endsWith(s, len, "εστατ"))
       return len - 5;
 
-    if (endsWith(s, len, "οτερ") ||
-        endsWith(s, len, "οτατ") ||
-        endsWith(s, len, "υτερ") ||
-        endsWith(s, len, "υτατ") ||
-        endsWith(s, len, "ωτερ") ||
-        endsWith(s, len, "ωτατ")) {
+    if (endsWith(s, len, "οτερ") || endsWith(s, len, "οτατ") || endsWith(s, len, "υτερ") || endsWith(s, len, "υτατ")
+        || endsWith(s, len, "ωτερ") || endsWith(s, len, "ωτατ")) {
       len -= 4;
       removed = true;
     }
@@ -999,7 +771,7 @@ public class SkroutzGreekStemmer {
     if (removed) {
       if (exc23a.contains(s, 0, len)) {
         len += 4;
-      }else if (exc23b.contains(s, 0, len)) {
+      } else if (exc23b.contains(s, 0, len)) {
         len += 2;
         s[len - 2] = 'υ';
         s[len - 1] = 'τ';
@@ -1015,7 +787,7 @@ public class SkroutzGreekStemmer {
     if (suffixLen > len)
       return false;
     for (int i = suffixLen - 1; i >= 0; i--)
-      if (s[len -(suffixLen - i)] != suffix.charAt(i))
+      if (s[len - (suffixLen - i)] != suffix.charAt(i))
         return false;
 
     return true;
@@ -1024,33 +796,33 @@ public class SkroutzGreekStemmer {
   private boolean endsWithVowel(char s[], int len) {
     if (len == 0)
       return false;
-    switch(s[len - 1]) {
-      case 'α':
-      case 'ε':
-      case 'η':
-      case 'ι':
-      case 'ο':
-      case 'υ':
-      case 'ω':
-        return true;
-      default:
-        return false;
+    switch (s[len - 1]) {
+    case 'α':
+    case 'ε':
+    case 'η':
+    case 'ι':
+    case 'ο':
+    case 'υ':
+    case 'ω':
+      return true;
+    default:
+      return false;
     }
   }
 
   private boolean endsWithVowelNoY(char s[], int len) {
     if (len == 0)
       return false;
-    switch(s[len - 1]) {
-      case 'α':
-      case 'ε':
-      case 'η':
-      case 'ι':
-      case 'ο':
-      case 'ω':
-        return true;
-      default:
-        return false;
+    switch (s[len - 1]) {
+    case 'α':
+    case 'ε':
+    case 'η':
+    case 'ι':
+    case 'ο':
+    case 'ω':
+      return true;
+    default:
+      return false;
     }
   }
 }
