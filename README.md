@@ -64,6 +64,7 @@ Installation
 ```bash
 sudo bin/elasticsearch-plugin install file:///path/to/plugin.zip
 ```
+after installation restart of elasticsearch is required
 
 Versions
 --------
